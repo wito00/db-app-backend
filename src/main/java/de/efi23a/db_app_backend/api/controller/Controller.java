@@ -2,10 +2,11 @@ package de.efi23a.db_app_backend.api.controller;
 
 
 import de.efi23a.db_app_backend.api.model.User;
-import org.example.apidemo.dbapi.TimetablesApi;
-import org.example.apidemo.dbpapimodell.StationData;
+
 import de.efi23a.db_app_backend.service.DBService;
 import de.efi23a.db_app_backend.service.UserService;
+import org.example.apidemo.dbapi.TimetablesApi;
+import org.example.apidemo.dbpapimodell.StationData;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
