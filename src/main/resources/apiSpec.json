@@ -1,0 +1,1119 @@
+{
+  "openapi": "3.0.3",
+  "info": {
+    "title": "db-rest",
+    "description": "A clean REST API wrapping around the Deutsche Bahn API.",
+    "contact": {
+      "url": "https://github.com/derhuerst/db-rest/tree/5"
+    },
+    "version": "5.0.3"
+  },
+  "paths": {
+    "/stops/nearby": {
+      "get": {
+        "summary": "Finds stops/stations close to a geolocation.",
+        "description": "Uses [`hafasClient.nearby()`](https://github.com/public-transport/hafas-client/blob/5/docs/nearby.md) to **find stops/stations close to the given geolocation**.",
+        "externalDocs": {
+          "description": "`hafasClient.nearby()` documentation",
+          "url": "https://github.com/public-transport/hafas-client/blob/5/docs/nearby.md"
+        },
+        "parameters": [
+          {
+            "name": "results",
+            "in": "query",
+            "description": "maximum number of results",
+            "schema": {
+              "type": "integer",
+              "default": 8
+            }
+          },
+          {
+            "name": "distance",
+            "in": "query",
+            "description": "maximum walking distance in meters – Default: –",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "stops",
+            "in": "query",
+            "description": "Return stops/stations?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "poi",
+            "in": "query",
+            "description": "Return points of interest?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "linesOfStops",
+            "in": "query",
+            "description": "Parse & expose lines at each stop/station?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Language of the results.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "pretty",
+            "in": "path",
+            "description": "Pretty-print JSON responses?",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "An array of locations, in the [`hafas-client` format](https://github.com/public-transport/hafas-client/blob/5/docs/nearby.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stops/reachable-from": {
+      "get": {
+        "summary": "Finds stops/stations reachable within a certain time from an address.",
+        "description": "Uses [`hafasClient.reachableFrom()`](https://github.com/public-transport/hafas-client/blob/5/docs/reachable-from.md) to **find stops/stations reachable within a certain time from an address**.",
+        "externalDocs": {
+          "description": "`hafasClient.reachableFrom()` documentation",
+          "url": "https://github.com/public-transport/hafas-client/blob/5/docs/reachable-from.md"
+        },
+        "parameters": [
+          {
+            "name": "when",
+            "in": "query",
+            "description": "Date & time to compute the reachability for. – Default: *now*",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "maxTransfers",
+            "in": "query",
+            "description": "Maximum number of transfers.",
+            "schema": {
+              "type": "integer",
+              "default": 5
+            }
+          },
+          {
+            "name": "maxDuration",
+            "in": "query",
+            "description": "Maximum travel duration, in minutes. – Default: *infinite*",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Language of the results.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "pretty",
+            "in": "path",
+            "description": "Pretty-print JSON responses?",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "An array of stops/stations, in the [`hafas-client` format](https://github.com/public-transport/hafas-client/blob/5/docs/reachable-from.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stops/{id}": {
+      "get": {
+        "summary": "Finds a stop/station by ID.",
+        "description": "Uses [`hafasClient.stop()`](https://github.com/public-transport/hafas-client/blob/5/docs/stop.md) to **find a stop/station by ID**.",
+        "externalDocs": {
+          "description": "`hafasClient.stop()` documentation",
+          "url": "https://github.com/public-transport/hafas-client/blob/5/docs/stop.md"
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "stop/station ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "linesOfStops",
+            "in": "query",
+            "description": "Parse & expose lines at each stop/station?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Language of the results.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "pretty",
+            "in": "path",
+            "description": "Pretty-print JSON responses?",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "The stop, in the [`hafas-client` format](https://github.com/public-transport/hafas-client/blob/5/docs/stop.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stops/{id}/departures": {
+      "get": {
+        "summary": "Fetches departures at a stop/station.",
+        "description": "Uses [`hafasClient.departures()`](https://github.com/public-transport/hafas-client/blob/5/docs/departures.md) to **query departures at a stop/station**.",
+        "externalDocs": {
+          "description": "`hafasClient.departures()` documentation",
+          "url": "https://github.com/public-transport/hafas-client/blob/5/docs/departures.md"
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "stop/station ID to show departures for",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "when",
+            "in": "query",
+            "description": "Date & time to get departures for. – Default: *now*",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "description": "Filter departures by direction.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "duration",
+            "in": "query",
+            "description": "Show departures for how many minutes?",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "results",
+            "in": "query",
+            "description": "Max. number of departures. – Default: *whatever HAFAS wants",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "linesOfStops",
+            "in": "query",
+            "description": "Parse & return lines of each stop/station?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "description": "Parse & return hints & warnings?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Language of the results.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "pretty",
+            "in": "path",
+            "description": "Pretty-print JSON responses?",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "An array of departures, in the [`hafas-client` format](https://github.com/public-transport/hafas-client/blob/5/docs/departures.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stops/{id}/arrivals": {
+      "get": {
+        "summary": "Fetches arrivals at a stop/station.",
+        "description": "Works like `/stops/{id}/departures`, except that it uses [`hafasClient.arrivals()`](https://github.com/public-transport/hafas-client/blob/5/docs/arrivals.md) to **query arrivals at a stop/station**.",
+        "externalDocs": {
+          "description": "`hafasClient.arrivals()` documentation",
+          "url": "https://github.com/public-transport/hafas-client/blob/5/docs/arrivals.md"
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "stop/station ID to show arrivals for",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "when",
+            "in": "query",
+            "description": "Date & time to get departures for. – Default: *now*",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "direction",
+            "in": "query",
+            "description": "Filter departures by direction.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "duration",
+            "in": "query",
+            "description": "Show departures for how many minutes?",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "results",
+            "in": "query",
+            "description": "Max. number of departures. – Default: *whatever HAFAS wants*",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "linesOfStops",
+            "in": "query",
+            "description": "Parse & return lines of each stop/station?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "description": "Parse & return hints & warnings?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Language of the results.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "pretty",
+            "in": "path",
+            "description": "Pretty-print JSON responses?",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "An array of arrivals, in the [`hafas-client` format](https://github.com/public-transport/hafas-client/blob/5/docs/arrivals.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/journeys": {
+      "get": {
+        "summary": "Finds journeys from A to B.",
+        "description": "Uses [`hafasClient.journeys()`](https://github.com/public-transport/hafas-client/blob/5/docs/journeys.md) to **find journeys from A (`from`) to B (`to`)**.",
+        "externalDocs": {
+          "description": "`hafasClient.journeys()` documentation",
+          "url": "https://github.com/public-transport/hafas-client/blob/5/docs/journeys.md"
+        },
+        "parameters": [
+          {
+            "name": "departure",
+            "in": "query",
+            "description": "Compute journeys departing at this date/time. Mutually exclusive with `arrival`. – Default: *now*",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "arrival",
+            "in": "query",
+            "description": "Compute journeys arriving at this date/time. Mutually exclusive with `departure`. – Default: *now*",
+            "schema": {
+              "type": "string",
+              "format": "date-time"
+            }
+          },
+          {
+            "name": "earlierThan",
+            "in": "query",
+            "description": "Compute journeys \"before\" an `ealierRef`.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "laterThan",
+            "in": "query",
+            "description": "Compute journeys \"after\" an `laterRef`.",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "results",
+            "in": "query",
+            "description": "Max. number of journeys.",
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          },
+          {
+            "name": "stopovers",
+            "in": "query",
+            "description": "Fetch & parse stopovers on the way?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "transfers",
+            "in": "query",
+            "description": "Maximum number of transfers. – Default: *let HAFAS decide*",
+            "schema": {
+              "type": "integer"
+            }
+          },
+          {
+            "name": "transferTime",
+            "in": "query",
+            "description": "Minimum time in minutes for a single transfer.",
+            "schema": {
+              "type": "integer",
+              "default": 0
+            }
+          },
+          {
+            "name": "accessibility",
+            "in": "query",
+            "description": "`partial` or `complete`. – Default: *not accessible*",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "bike",
+            "in": "query",
+            "description": "Compute only bike-friendly journeys?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "startWithWalking",
+            "in": "query",
+            "description": "Consider walking to nearby stations at the beginning of a journey?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "walkingSpeed",
+            "in": "query",
+            "description": "`slow`, `normal` or `fast`.",
+            "schema": {
+              "type": "string",
+              "default": "normal",
+              "enum": [
+                "slow",
+                "normal",
+                "fast"
+              ]
+            }
+          },
+          {
+            "name": "tickets",
+            "in": "query",
+            "description": "Return information about available tickets?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "polylines",
+            "in": "query",
+            "description": "Fetch & parse a shape for each journey leg?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "description": "Parse & return hints & warnings?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "scheduledDays",
+            "in": "query",
+            "description": "Parse & return dates each journey is valid on?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Language of the results.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "loyaltyCard",
+            "in": "query",
+            "description": "Type of loyalty card in use. – Default: *none*",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "bahncard-1st-25",
+                "bahncard-2nd-25",
+                "bahncard-1st-50",
+                "bahncard-2nd-50",
+                "vorteilscard",
+                "halbtaxabo-railplus",
+                "halbtaxabo",
+                "voordeelurenabo-railplus",
+                "voordeelurenabo",
+                "shcard",
+                "generalabonnement"
+              ]
+            }
+          },
+          {
+            "name": "firstClass",
+            "in": "query",
+            "description": "Search for first-class options?",
+            "schema": {
+              "type": "boolean",
+              "default": "false"
+            }
+          },
+          {
+            "name": "pretty",
+            "in": "path",
+            "description": "Pretty-print JSON responses?",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "An array of journeys, in the [`hafas-client` format](https://github.com/public-transport/hafas-client/blob/5/docs/journeys.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/trips/{id}": {
+      "get": {
+        "summary": "Fetches a trip by ID.",
+        "description": "Uses [`hafasClient.trip()`](https://github.com/public-transport/hafas-client/blob/5/docs/trip.md) to **fetch a trip by ID**.",
+        "externalDocs": {
+          "description": "`hafasClient.trip()` documentation",
+          "url": "https://github.com/public-transport/hafas-client/blob/5/docs/trip.md"
+        },
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "trip ID",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "lineName",
+            "in": "query",
+            "description": "the trip's line name",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stopovers",
+            "in": "query",
+            "description": "Fetch & parse stopovers on the way?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "description": "Parse & return hints & warnings?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "polyline",
+            "in": "query",
+            "description": "Fetch & parse the geographic shape of the trip?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Language of the results.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "pretty",
+            "in": "path",
+            "description": "Pretty-print JSON responses?",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "The trip, in the [`hafas-client` format](https://github.com/public-transport/hafas-client/blob/5/docs/trip.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/locations": {
+      "get": {
+        "summary": "Finds stops/stations, POIs and addresses matching a query.",
+        "description": "Uses [`hafasClient.locations()`](https://github.com/public-transport/hafas-client/blob/5/docs/locations.md) to **find stops/stations, POIs and addresses matching `query`**.",
+        "externalDocs": {
+          "description": "`hafasClient.locations()` documentation",
+          "url": "https://github.com/public-transport/hafas-client/blob/5/docs/locations.md"
+        },
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "The term to search for.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "fuzzy",
+            "in": "query",
+            "description": "Find more than exact matches?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "results",
+            "in": "query",
+            "description": "How many stations shall be shown?",
+            "schema": {
+              "type": "integer",
+              "default": 10
+            }
+          },
+          {
+            "name": "stops",
+            "in": "query",
+            "description": "Show stops/stations?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "addresses",
+            "in": "query",
+            "description": "Show points of interest?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "poi",
+            "in": "query",
+            "description": "Show addresses?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "linesOfStops",
+            "in": "query",
+            "description": "Parse & return lines of each stop/station?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Language of the results.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "pretty",
+            "in": "path",
+            "description": "Pretty-print JSON responses?",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "An array of locations, in the [`hafas-client` format](https://github.com/public-transport/hafas-client/blob/5/docs/locations.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/radar": {
+      "get": {
+        "summary": "Finds all vehicles currently in an area.",
+        "description": "Uses [`hafasClient.radar()`](https://github.com/public-transport/hafas-client/blob/5/docs/radar.md) to **find all vehicles currently in an area**, as well as their movements.",
+        "externalDocs": {
+          "description": "`hafasClient.radar()` documentation",
+          "url": "https://github.com/public-transport/hafas-client/blob/5/docs/radar.md"
+        },
+        "parameters": [
+          {
+            "name": "results",
+            "in": "query",
+            "description": "Max. number of vehicles.",
+            "schema": {
+              "type": "integer",
+              "default": 256
+            }
+          },
+          {
+            "name": "duration",
+            "in": "query",
+            "description": "Compute frames for the next `n` seconds.",
+            "schema": {
+              "type": "integer",
+              "default": 30
+            }
+          },
+          {
+            "name": "frames",
+            "in": "query",
+            "description": "Number of frames to compute.",
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          },
+          {
+            "name": "polylines",
+            "in": "query",
+            "description": "Fetch & parse a geographic shape for the movement of each vehicle?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Language of the results.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "pretty",
+            "in": "path",
+            "description": "Pretty-print JSON responses?",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "An array of movements, in the [`hafas-client` format](https://github.com/public-transport/hafas-client/blob/5/docs/radar.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/journeys/{ref}": {
+      "get": {
+        "summary": "Fetches up-to-date realtime data for a journey computed before.",
+        "description": "Uses [`hafasClient.refreshJourney()`](https://github.com/public-transport/hafas-client/blob/5/docs/refresh-journey.md) to **\"refresh\" a journey, using its `refreshToken`**.\n\nThe journey will be the same (equal `from`, `to`, `via`, date/time & vehicles used), but you can get up-to-date realtime data, like delays & cancellations.",
+        "externalDocs": {
+          "description": "`hafasClient.refreshJourney()` documentation",
+          "url": "https://github.com/public-transport/hafas-client/blob/5/docs/refresh-journey.md"
+        },
+        "parameters": [
+          {
+            "name": "ref",
+            "in": "path",
+            "description": "The journey's `refreshToken`.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "stopovers",
+            "in": "query",
+            "description": "Fetch & parse stopovers on the way?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "tickets",
+            "in": "query",
+            "description": "Return information about available tickets?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "polylines",
+            "in": "query",
+            "description": "Fetch & parse a shape for each journey leg?",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "remarks",
+            "in": "query",
+            "description": "Parse & return hints & warnings?",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          },
+          {
+            "name": "language",
+            "in": "query",
+            "description": "Language of the results.",
+            "schema": {
+              "type": "string",
+              "default": "en"
+            }
+          },
+          {
+            "name": "pretty",
+            "in": "path",
+            "description": "Pretty-print JSON responses?",
+            "schema": {
+              "type": "boolean"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "The up-to-date journey, in the [`hafas-client` format](https://github.com/public-transport/hafas-client/blob/5/docs/refresh-journey.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "type": "object"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations/{id}": {
+      "get": {
+        "summary": "Returns a stop/station from `db-stations`.",
+        "description": "Returns a stop/station from [`db-stations@3`](https://github.com/derhuerst/db-stations/tree/3.0.1).",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "Stop/station ID.",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "A stop/station, in the [`db-stations@3` format](https://github.com/derhuerst/db-stations/blob/3.0.1/readme.md).",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/stations": {
+      "get": {
+        "summary": "Autocompletes stops/stations by name or filters stops/stations.",
+        "description": "If the `query` parameter is used, it will use [`db-stations-autocomplete@2`](https://github.com/derhuerst/db-stations-autocomplete/tree/2.2.0) to autocomplete *Deutsche Bahn*-operated stops/stations by name. Otherwise, it will filter the stops/stations in [`db-stations@3`](https://github.com/derhuerst/db-stations/tree/3.0.1).\n\nInstead of receiving a JSON response, you can request [newline-delimited JSON](http://ndjson.org) by sending `Accept: application/x-ndjson`.",
+        "parameters": [
+          {
+            "name": "query",
+            "in": "query",
+            "description": "Find stations by name using [`db-stations-autocomplete@2`](https://github.com/derhuerst/db-stations-autocomplete/tree/2.2.0).",
+            "schema": {
+              "type": "string"
+            }
+          },
+          {
+            "name": "limit",
+            "in": "query",
+            "description": "*If `query` is used:* Return at most `n` stations.",
+            "schema": {
+              "type": "integer",
+              "default": 3
+            }
+          },
+          {
+            "name": "fuzzy",
+            "in": "query",
+            "description": "*If `query` is used:* Find stations despite typos.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
+            "name": "completion",
+            "in": "query",
+            "description": "*If `query` is used:* Autocomplete stations.",
+            "schema": {
+              "type": "boolean",
+              "default": true
+            }
+          }
+        ],
+        "responses": {
+          "2XX": {
+            "description": "An object of stops/stations in the [`db-stations@3` format](https://github.com/derhuerst/db-stations/blob/3.0.1/readme.md), with their IDs as the keys.",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object"
+                }
+              },
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "externalDocs": {
+    "description": "human-readable docs",
+    "url": "https://github.com/derhuerst/db-rest/blob/5/docs/readme.md"
+  },
+  "servers": [
+    {
+      "url": "https://v6.db.transport.rest"
+    }
+  ]
+}

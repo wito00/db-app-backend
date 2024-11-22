@@ -1,7 +1,9 @@
 package de.efi23a.db_app_backend;
 
 
-import org.example.apidemo.dbapi.TimetablesApi;
+
+import org.example.apidemo.ApiClient;
+import org.example.apidemo.dbapi.DefaultApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -9,7 +11,7 @@ import org.springframework.context.annotation.Configuration;
 public class ClientApiConfiguration {
 
     @Bean
-    public TimetablesApi clientApiClient() {
-        return new TimetablesApi();
+    public DefaultApi clientApiClient() {
+        return new DefaultApi();
     }
 }
