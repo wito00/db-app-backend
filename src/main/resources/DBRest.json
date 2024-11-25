@@ -1113,7 +1113,7 @@
   },
   "servers": [
     {
-      "url": "https://v6.db.transport.rest"
+      "url": "https://db-rest-production.up.railway.app"
     }
   ]
 }

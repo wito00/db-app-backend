@@ -79,62 +79,64 @@
     <build>
         <plugins>
             <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-                <configuration>
-                    <excludes>
-                        <exclude>
-                            <groupId>org.projectlombok</groupId>
-                            <artifactId>lombok</artifactId>
-                        </exclude>
-                    </excludes>
-                </configuration>
-            </plugin>
-<!--            <plugin>-->
-<!--                <groupId>org.openapitools</groupId>-->
-<!--                <artifactId>openapi-generator-maven-plugin</artifactId>-->
-<!--                <version>7.9.0</version>-->
-<!--                <executions>-->
-<!--                    <execution>-->
-<!--                        <goals>-->
-<!--                            <goal>generate</goal>-->
-<!--                        </goals>-->
-<!--                        <configuration>-->
-<!--                            <inputSpec>-->
-<!--                                ${project.basedir}/src/main/resources/Timetables-1.0.213.yaml-->
-<!--                            </inputSpec>-->
-<!--                            <generatorName>java</generatorName>-->
-<!--                            <apiPackage>org.example.apidemo.dbapi</apiPackage>-->
-<!--                            <modelPackage>org.example.apidemo.dbpapimodell</modelPackage>-->
-<!--                            <configOptions>-->
-<!--                                <library>restclient</library>-->
-<!--                                <testOutput/>-->
-<!--                                <withXml>true</withXml>-->
-<!--                            </configOptions>-->
-<!--                        </configuration>-->
-<!--                    </execution>-->
-<!--                </executions>-->
-<!--            </plugin>-->
-            <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
                 <version>7.9.0</version>
                 <executions>
                     <execution>
+                        <id>1</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
                         <configuration>
                             <skipValidateSpec>true</skipValidateSpec>
                             <inputSpec>
-                                ${project.basedir}/src/main/resources/apiSpec.json
+                                ${project.basedir}/src/main/resources/DBRest.json
                             </inputSpec>
                             <generatorName>java</generatorName>
-                            <apiPackage>org.example.apidemo.dbapi</apiPackage>
-                            <modelPackage>org.example.apidemo.dbpapimodell</modelPackage>
+                            <apiPackage>org.example.dbREst.api</apiPackage>
+                            <modelPackage>org.example.dbRest.model</modelPackage>
                             <configOptions>
                                 <library>restclient</library>
                                 <testOutput/>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>2</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/Timetables-1.0.213.yaml
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <apiPackage>org.example.timetables.api</apiPackage>
+                            <modelPackage>org.example.timetables.model</modelPackage>
+                            <configOptions>
+                                <library>restclient</library>
+                                <testOutput/>
+                                <withXml>true</withXml>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>3</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <inputSpec>
+                                ${project.basedir}/src/main/resources/FaSta.yaml
+                            </inputSpec>
+                            <generatorName>java</generatorName>
+                            <apiPackage>org.example.faSta.api</apiPackage>
+                            <modelPackage>org.example.faSta.model</modelPackage>
+                            <configOptions>
+                                <library>restclient</library>
+                                <testOutput/>
+                                <withXml>true</withXml>
                             </configOptions>
                         </configuration>
                     </execution>
