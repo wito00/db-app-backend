@@ -180,7 +180,6 @@
             "name": "id",
             "in": "path",
             "description": "stop/station ID",
-            "required": true,
             "schema": {
               "type": "string"
             }
@@ -239,7 +238,6 @@
             "name": "id",
             "in": "path",
             "description": "stop/station ID to show departures for",
-            "required": true,
             "schema": {
               "type": "string"
             }
@@ -320,7 +318,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "object"
+                  "$ref": "#/components/schemas/DepartureWrapper"
                 }
               }
             }
@@ -341,7 +339,6 @@
             "name": "id",
             "in": "path",
             "description": "stop/station ID to show arrivals for",
-            "required": true,
             "schema": {
               "type": "string"
             }
@@ -665,7 +662,6 @@
             "name": "id",
             "in": "path",
             "description": "trip ID",
-            "required": true,
             "schema": {
               "type": "string"
             }
@@ -674,7 +670,6 @@
             "name": "lineName",
             "in": "query",
             "description": "the trip's line name",
-            "required": true,
             "schema": {
               "type": "string"
             }
@@ -754,7 +749,6 @@
             "name": "query",
             "in": "query",
             "description": "The term to search for.",
-            "required": true,
             "schema": {
               "type": "string"
             }
@@ -839,7 +833,7 @@
                 "schema": {
                   "type": "array",
                   "items": {
-                    "type": "object"
+                    "$ref": "#/components/schemas/station"
                   }
                 }
               }
@@ -941,7 +935,6 @@
             "name": "ref",
             "in": "path",
             "description": "The journey's `refreshToken`.",
-            "required": true,
             "schema": {
               "type": "string"
             }
@@ -1026,7 +1019,6 @@
             "name": "id",
             "in": "path",
             "description": "Stop/station ID.",
-            "required": true,
             "schema": {
               "type": "string"
             }
@@ -1103,6 +1095,234 @@
               }
             }
           }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "DepartureWrapper": {
+        "type": "object",
+        "properties": {
+          "departures": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Departure"
+            },
+            "description": "List of departures from the specified station or stop."
+          },
+          "metadata": {
+            "type": "object",
+
+            "description": "Optional metadata about the departure list response.",
+            "properties": {
+              "generatedAt": {
+                "type": "string",
+                "format": "date-time",
+                "description": "Timestamp of when the data was generated."
+              },
+              "stationName": {
+                "type": "string",
+                "description": "Name of the station or stop for which departures are listed."
+              }
+            }
+          }
+        }
+      },
+      "Departure": {
+        "type": "object",
+        "properties": {
+          "tripId": {
+            "type": "string",
+            "description": "Unique identifier for the trip."
+          },
+          "stop": {
+            "$ref": "#/components/schemas/stop"
+          },
+          "when": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Actual departure time."
+          },
+          "plannedWhen": {
+            "type": "string",
+            "format": "date-time",
+            "description": "Planned departure time."
+          },
+          "prognosedWhen": {
+            "type": "string",
+            "format": "date-time",
+
+            "description": "Predicted departure time, if available."
+          },
+          "delay": {
+            "type": "integer",
+
+            "description": "Delay in minutes, if applicable."
+          },
+          "platform": {
+            "type": "string",
+
+            "description": "Actual platform for departure."
+          },
+          "plannedPlatform": {
+            "type": "string",
+
+            "description": "Planned platform for departure."
+          },
+          "prognosedPlatform": {
+            "type": "string",
+
+            "description": "Predicted platform for departure, if available."
+          },
+          "prognosisType": {
+            "type": "string",
+
+            "description": "Type of prognosis information."
+          },
+          "direction": {
+            "type": "string",
+            "description": "Direction of the trip."
+          },
+          "provenance": {
+            "type": "string",
+
+            "description": "Where the train or tram is coming from, if available."
+          },
+          "line": {
+            "$ref": "#/components/schemas/line"
+          },
+          "remarks": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            },
+            "description": "Remarks or additional notes about the trip."
+          },
+          "origin": {
+            "$ref": "#/components/schemas/station"
+          },
+          "destination": {
+            "$ref": "#/components/schemas/station"
+          },
+          "cancelled": {
+            "type": "boolean",
+
+            "description": "Indicates whether the trip was cancelled."
+          }
+        }
+      },
+      "stop": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["stop", "station"],
+            "description": "Type of stop (station or stop)."
+          },
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the stop."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the stop."
+          },
+          "location": {
+            "$ref": "#/components/schemas/location"
+          },
+          "products": {
+            "$ref": "#/components/schemas/products"
+          },
+          "station": {
+            "$ref": "#/components/schemas/station"
+          }
+        }
+      },
+      "station": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["station", "stop", "location"],
+            "description": "Type of station."
+          },
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the station."
+          },
+          "name": {
+            "type": "string",
+            "description": "Name of the station."
+          },
+          "location": {
+            "$ref": "#/components/schemas/location"
+          },
+          "products": {
+            "$ref": "#/components/schemas/products"
+          }
+        }
+      },
+      "location": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": ["location", "stop"],
+            "description": "Type identifier for location object."
+          },
+          "id": {
+            "type": "string",
+            "description": "Unique identifier for the location object."
+          },
+          "latitude": {
+            "type": "number",
+            "format": "float",
+            "description": "Latitude coordinate of the location."
+          },
+          "longitude": {
+            "type": "number",
+            "format": "float",
+            "description": "Longitude coordinate of the location."
+          }
+        }
+      },
+      "products": {
+        "type": "object",
+        "properties": {
+          "nationalExpress": { "type": "boolean" },
+          "national": { "type": "boolean" },
+          "regionalExp": { "type": "boolean" },
+          "regional": { "type": "boolean" },
+          "suburban": { "type": "boolean" },
+          "bus": { "type": "boolean" },
+          "ferry": { "type": "boolean" },
+          "subway": { "type": "boolean" },
+          "tram": { "type": "boolean" },
+          "taxi": { "type": "boolean" }
+        }
+      },
+      "line": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "id": { "type": "string" },
+          "fahrtNr": { "type": "string" },
+          "name": { "type": "string" },
+          "isPublic": { "type": "boolean", "nullable": true },
+          "adminCode": { "type": "string" },
+          "productName": { "type": "string" },
+          "mode": { "type": "string" },
+          "product": { "type": "string" },
+          "operator": { "$ref": "#/components/schemas/operator" }
+        }
+      },
+      "operator": {
+        "type": "object",
+        "properties": {
+          "type": { "type": "string" },
+          "id": { "type": "string" },
+          "name": { "type": "string" }
         }
       }
     }
