@@ -1,25 +1,20 @@
 package de.efi23a.db_app_backend.api.controller;
 
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import de.efi23a.db_app_backend.model.Arrival;
 import de.efi23a.db_app_backend.model.Departure;
+import de.efi23a.db_app_backend.model.StationOverview;
 import de.efi23a.db_app_backend.service.DBService;
 import org.example.dbREst.api.DefaultApi;
-import org.example.dbRest.model.DepartureWrapper;
 import org.example.faSta.api.FaStaApi;
-import org.example.faSta.model.Facility;
 import org.example.timetables.api.TimetablesApi;
-import org.example.timetables.model.StationData;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 @RestController
 public class Controller {
@@ -53,76 +48,25 @@ public class Controller {
         faStaApi.getApiClient().addDefaultHeader("DB-Api-Key", apiSecret);
     }
 
-    @GetMapping("/db/stationData")
+    @GetMapping("/overview")
     @CrossOrigin("http://localhost:4200")
-    public Object getStationDataById(@RequestParam String id) {
-        Object object = defaultApi.stopsIdGet(id, null, null, null);
-        Map<String, Object> map = jacksonObjectMapper.convertValue(object, new TypeReference<Map<String, Object>>() {
-        });
-        String type = map.get("type").toString();
-        System.out.println(type);
-        return object;
+    public StationOverview getStationOverviewByStationName(String pattern) {
+        List<String> evaAndName = dbService.getEvaAndNameByPattern(pattern);
+        String eva = evaAndName.get(0);
+        String stationName = evaAndName.get(1);
+        List<Departure> departures = dbService.getDeparturesByEva(eva);
+        List<Arrival> arrivals = dbService.getArrivalsByEva(eva);
+        Boolean hasElevator = dbService.hasElevatorByEva(eva);
+        return new StationOverview(stationName, hasElevator, departures, arrivals);
     }
 
-    @GetMapping("/db/departures")
+    @GetMapping("/arrivals")
     @CrossOrigin("http://localhost:4200")
-    public List<Departure> getDeparturesByStationName(@RequestParam String stationName) {
-        String id = dbService.getEvoNoByStationName(stationName);
-        DepartureWrapper departureWrapper = defaultApi.stopsIdDeparturesGet(id, null, null, null, 1000, null, null, null, null);
-        List<org.example.dbRest.model.Departure> departureList = departureWrapper.getDepartures();
-        List<Departure> departureListFrontend = new ArrayList<>();
-        for(org.example.dbRest.model.Departure departure: departureList){
-            String name = departure.getLine().getName();
-            String departureTime = departure.getWhen().toString();
-            String destination = departure.getDestination().getName();
-            String typ = departure.getLine().getProductName();
-            departureListFrontend.add(new Departure(name, departureTime, destination, typ));
-        }
-        return departureListFrontend;
+    public List<Arrival> arrivals(String eva) {
+//        ArrivalWrapper arrivalWrapper = defaultApi.stopsIdArrivalsGet( eva, null, null, null, null, null, null,null,null);
+//        return arrivalWrapper.getArrivals();
+        return dbService.getArrivalsByEva(eva);
     }
 
-//    @GetMapping("/db/autocomplete")
-//    @CrossOrigin("http//localhost:4200")
-//    public void autocomplete(String pattern) {
-//        defaultApi.stationsGet(pattern, 3, false, true);
-//    }
 
-    @GetMapping("/db/getName")
-    @CrossOrigin("http://localhost:4200")
-    public String getStationNameByEva(@RequestParam String evaNo) {
-        List<StationData> stationData = timetablesApi.stationPatternGet(evaNo).getStation();
-        return dbService.getName(stationData);
-    }
-
-    @GetMapping("/db/test")
-    @CrossOrigin("http://localhost:4200")
-    public void getDeparturesByEva(@RequestParam String id) {
-        //String id = dbService.getEvoNoByStationName(stationName);
-        Object object = defaultApi.stopsIdDeparturesGet(
-                id, null, null, null, null, null, null, null, null
-        );
-    }
-
-    @GetMapping("db/elevator")
-    @CrossOrigin("http://localhost:4200")
-    public Boolean hasElevatorByEva(String eva) {
-        Object object = defaultApi.stationsIdGet(eva);
-        Map<String, Object> map = jacksonObjectMapper.convertValue(object, new TypeReference<Map<String, Object>>() {
-        });
-        String id = map.get("nr").toString();
-        List<Facility> facilities;
-        try {
-            facilities = faStaApi.findStationByStationNumber(Long.parseLong(id)).getFacilities();
-        } catch (Exception e) {
-            return false;
-        }
-           assert facilities != null;
-
-        for (Facility facility : facilities) {
-            if (facility.getType() == Facility.TypeEnum.ELEVATOR && facility.getState() == Facility.StateEnum.ACTIVE) {
-                return true;
-            }
-        }
-        return false;
-    }
 }
