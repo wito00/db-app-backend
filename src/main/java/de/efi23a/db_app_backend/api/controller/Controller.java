@@ -18,12 +18,8 @@ import java.util.List;
 
 @RestController
 public class Controller {
-    private DefaultApi defaultApi;
-    private TimetablesApi timetablesApi;
-    private ObjectMapper jacksonObjectMapper;
-    private DBService dbService;
-    private FaStaApi faStaApi;
 
+    private DBService dbService;
 
     public Controller(
             DefaultApi defaultApi,
@@ -31,17 +27,12 @@ public class Controller {
             TimetablesApi timetablesApi,
             DBService dbService,
             FaStaApi faStaApi,
-
             @Value("${api.id}") String apiId,
             @Value("${api.secret}") String apiSecret
     ) {
 
-        this.defaultApi = defaultApi;
-        this.jacksonObjectMapper = jacksonObjectMapper;
-        this.timetablesApi = timetablesApi;
         this.dbService = dbService;
-        this.faStaApi = faStaApi;
-
+        //authentication for timetables and staDa API
         timetablesApi.getApiClient().addDefaultHeader("DB-Client-Id", apiId);
         timetablesApi.getApiClient().addDefaultHeader("DB-Api-Key", apiSecret);
         faStaApi.getApiClient().addDefaultHeader("DB-Client-Id", apiId);
@@ -55,17 +46,12 @@ public class Controller {
         String eva = evaAndName.get(0);
         String stationName = evaAndName.get(1);
         List<Departure> departures = dbService.getDeparturesByEva(eva);
+        departures = dbService.sortByDepartureTime(departures);
         List<Arrival> arrivals = dbService.getArrivalsByEva(eva);
+        arrivals = dbService.sortByArrivalTime(arrivals);
         Boolean hasElevator = dbService.hasElevatorByEva(eva);
-        return new StationOverview(stationName, hasElevator, departures, arrivals);
-    }
-
-    @GetMapping("/arrivals")
-    @CrossOrigin("http://localhost:4200")
-    public List<Arrival> arrivals(String eva) {
-//        ArrivalWrapper arrivalWrapper = defaultApi.stopsIdArrivalsGet( eva, null, null, null, null, null, null,null,null);
-//        return arrivalWrapper.getArrivals();
-        return dbService.getArrivalsByEva(eva);
+        String date = dbService.getCurrentDate();
+        return new StationOverview(stationName, hasElevator, date, departures, arrivals);
     }
 
 

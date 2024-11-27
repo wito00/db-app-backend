@@ -13,9 +13,13 @@ import org.example.faSta.model.Facility;
 import org.example.timetables.api.TimetablesApi;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 
 @Service
@@ -24,12 +28,14 @@ public class DBService {
     DefaultApi defaultApi;
     ObjectMapper jacksonObjectMapper;
     FaStaApi faStaApi;
+    Arrival arrival;
 
     public DBService(
             TimetablesApi timetablesApi,
             DefaultApi defaultApi,
             ObjectMapper jacksonObjectMapper,
             FaStaApi faStaApi
+
     ) {
         this.timetablesApi = timetablesApi;
         this.defaultApi = defaultApi;
@@ -38,7 +44,7 @@ public class DBService {
     }
 
     public List<String> getEvaAndNameByPattern(String stationName) {
-        List<Station> stationList = defaultApi.locationsGet(stationName, null, null, null, null, null, null, null,null);
+        List<Station> stationList = defaultApi.locationsGet(stationName, null, null, null, null, null, null, null, null);
         String eva = stationList.getFirst().getId();
         String name = stationList.getFirst().getName();
         List<String> evaAndName = new ArrayList<>();
@@ -51,7 +57,7 @@ public class DBService {
         DepartureWrapper departureWrapper = defaultApi.stopsIdDeparturesGet(eva, null, null, null, 10, null, null, null, null);
         List<org.example.dbRest.model.Departure> departureList = departureWrapper.getDepartures();
         List<Departure> departureListFrontend = new ArrayList<>();
-        for(org.example.dbRest.model.Departure departure: departureList){
+        for (org.example.dbRest.model.Departure departure : departureList) {
             String name = departure.getLine().getName();
             String departureTime = departure.getPlannedWhen().toString();
             String destination = departure.getDestination().getName();
@@ -65,7 +71,7 @@ public class DBService {
         ArrivalWrapper arrivalWrapper = defaultApi.stopsIdArrivalsGet(eva, null, null, null, 10, null, null, null, null);
         List<org.example.dbRest.model.Arrival> arrivalList = arrivalWrapper.getArrivals();
         List<Arrival> arrivalListFrontend = new ArrayList<>();
-        for(org.example.dbRest.model.Arrival arrival: arrivalList){
+        for (org.example.dbRest.model.Arrival arrival : arrivalList) {
             String name = arrival.getLine().getName();
             String departureTime = arrival.getPlannedWhen().toString();
             String origin = arrival.getOrigin().getName();
@@ -95,4 +101,26 @@ public class DBService {
         }
         return false;
     }
+
+    public String getCurrentDate() {
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        return date.format(formatter);
+    }
+
+
+    public List<Arrival> sortByArrivalTime(List<Arrival> arrivals) {
+        return arrivals.stream()
+                .sorted((t1, t2) -> LocalTime.parse(t1.getArrivalTime())
+                        .compareTo(LocalTime.parse(t2.getArrivalTime())))
+                .collect(Collectors.toList());
+    }
+
+    public List<Departure> sortByDepartureTime(List<Departure> departures) {
+        return departures.stream()
+                .sorted((t1, t2) -> LocalTime.parse(t1.getDepartureTime())
+                        .compareTo(LocalTime.parse(t2.getDepartureTime())))
+                .collect(Collectors.toList());
+    }
+
 }

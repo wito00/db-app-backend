@@ -1,8 +1,6 @@
 package de.efi23a.db_app_backend;
 
 
-
-
 import org.example.dbREst.api.DefaultApi;
 import org.example.faSta.api.FaStaApi;
 import org.example.timetables.api.TimetablesApi;
@@ -23,7 +21,7 @@ public class ClientApiConfiguration {
     }
 
     @Bean
-    public FaStaApi faStaClient(){
+    public FaStaApi faStaClient() {
         return new FaStaApi();
     }
 
