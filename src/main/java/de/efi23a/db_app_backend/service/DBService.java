@@ -59,7 +59,7 @@ public class DBService {
         List<org.example.dbRest.model.Departure> departureList = departureWrapper.getDepartures();
         List<Departure> departureListFrontend = new ArrayList<>();
         for (org.example.dbRest.model.Departure departure : departureList) {
-            if(departure.getLine().getProductName().equals("Bus") || departure.getLine().getProductName().equals("STR")){
+            if(departure.getLine().getProductName().equals("Bus") || departure.getLine().getProductName().equals("STR") || departure.getLine().getProductName().equals("U")){
                 continue;
             }if(departureListFrontend.size() >= 10){
                 return departureListFrontend;
@@ -79,7 +79,7 @@ public class DBService {
         List<org.example.dbRest.model.Arrival> arrivalList = arrivalWrapper.getArrivals();
         List<Arrival> arrivalListFrontend = new ArrayList<>();
         for (org.example.dbRest.model.Arrival arrival : arrivalList) {
-            if(arrival.getLine().getProductName().equals("Bus") || arrival.getLine().getProductName().equals("STR")){
+            if(arrival.getLine().getProductName().equals("Bus") || arrival.getLine().getProductName().equals("STR") || arrival.getLine().getProductName().equals("U")){
                 continue;
             }if(arrivalListFrontend.size() >= 10){
                 return arrivalListFrontend;
@@ -87,7 +87,13 @@ public class DBService {
             String name = arrival.getLine().getName();
             String departureTime = arrival.getPlannedWhen().toString();
             String platform = arrival.getPlannedPlatform();
-            String origin = arrival.getOrigin().getName();
+            String origin= "";
+            assert arrival.getOrigin() != null;
+            if(arrival.getOrigin().getName() != null){
+            origin = arrival.getOrigin().getName();
+
+            }
+
             String typ = arrival.getLine().getProductName();
             arrivalListFrontend.add(new Arrival(name, departureTime,platform, origin, typ));
         }
