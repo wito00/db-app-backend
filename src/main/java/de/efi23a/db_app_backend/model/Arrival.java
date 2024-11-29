@@ -10,13 +10,15 @@ import java.time.format.DateTimeFormatter;
 public class Arrival {
     String name;
     String arrivalTime;
+    String platform;
     String origin;
     String typ;
 
-    public Arrival(String name, String departureDateTime, String origin, String typ) {
+    public Arrival(String name, String arrivalDateTime,String platform, String origin, String typ) {
 
         this.name = name;
-        this.arrivalTime = dateTimeToTime(departureDateTime);
+        this.arrivalTime = dateTimeToTime(arrivalDateTime);
+        this.platform = platform;
         this.origin = origin;
         this.typ = typ;
     }

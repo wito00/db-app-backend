@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,29 +55,41 @@ public class DBService {
     }
 
     public List<Departure> getDeparturesByEva(String eva) {
-        DepartureWrapper departureWrapper = defaultApi.stopsIdDeparturesGet(eva, null, null, null, 10, null, null, null, null);
+        DepartureWrapper departureWrapper = defaultApi.stopsIdDeparturesGet(eva, OffsetDateTime.now(), null, 180, 100, null, null, null, null);
         List<org.example.dbRest.model.Departure> departureList = departureWrapper.getDepartures();
         List<Departure> departureListFrontend = new ArrayList<>();
         for (org.example.dbRest.model.Departure departure : departureList) {
+            if(departure.getLine().getProductName().equals("Bus") || departure.getLine().getProductName().equals("STR")){
+                continue;
+            }if(departureListFrontend.size() >= 10){
+                return departureListFrontend;
+            }
             String name = departure.getLine().getName();
             String departureTime = departure.getPlannedWhen().toString();
+            String platform = departure.getPlannedPlatform();
             String destination = departure.getDestination().getName();
             String typ = departure.getLine().getProductName();
-            departureListFrontend.add(new Departure(name, departureTime, destination, typ));
+            departureListFrontend.add(new Departure(name, departureTime, platform, destination, typ));
         }
         return departureListFrontend;
     }
 
     public List<Arrival> getArrivalsByEva(String eva) {
-        ArrivalWrapper arrivalWrapper = defaultApi.stopsIdArrivalsGet(eva, null, null, null, 10, null, null, null, null);
+        ArrivalWrapper arrivalWrapper = defaultApi.stopsIdArrivalsGet(eva, OffsetDateTime.now(), null, 180, 100, null, null, null, null);
         List<org.example.dbRest.model.Arrival> arrivalList = arrivalWrapper.getArrivals();
         List<Arrival> arrivalListFrontend = new ArrayList<>();
         for (org.example.dbRest.model.Arrival arrival : arrivalList) {
+            if(arrival.getLine().getProductName().equals("Bus") || arrival.getLine().getProductName().equals("STR")){
+                continue;
+            }if(arrivalListFrontend.size() >= 10){
+                return arrivalListFrontend;
+            }
             String name = arrival.getLine().getName();
             String departureTime = arrival.getPlannedWhen().toString();
+            String platform = arrival.getPlannedPlatform();
             String origin = arrival.getOrigin().getName();
             String typ = arrival.getLine().getProductName();
-            arrivalListFrontend.add(new Arrival(name, departureTime, origin, typ));
+            arrivalListFrontend.add(new Arrival(name, departureTime,platform, origin, typ));
         }
         return arrivalListFrontend;
     }
