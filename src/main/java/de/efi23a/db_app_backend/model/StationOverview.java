@@ -7,14 +7,14 @@ import java.util.List;
 @Data
 public class StationOverview {
     String stationName;
-    Boolean elevator;
     String date;
+    List<Elevator> elevators;
     List<Departure> nextDepartures;
     List<Arrival> nextArrivals;
 
-    public StationOverview(String stationName, Boolean elevator, String date, List<Departure> departureList, List<Arrival> arrivalList) {
+    public StationOverview(String stationName, List<Elevator> elevators, String date, List<Departure> departureList, List<Arrival> arrivalList) {
         this.stationName = stationName;
-        this.elevator = elevator;
+        this.elevators = elevators;
         this.date = date;
         this.nextDepartures = departureList;
         this.nextArrivals = arrivalList;

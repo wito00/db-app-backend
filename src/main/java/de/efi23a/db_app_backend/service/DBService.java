@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.efi23a.db_app_backend.model.Arrival;
 import de.efi23a.db_app_backend.model.Departure;
+import de.efi23a.db_app_backend.model.Elevator;
 import org.example.dbREst.api.DefaultApi;
 import org.example.dbRest.model.ArrivalWrapper;
 import org.example.dbRest.model.DepartureWrapper;
@@ -100,25 +101,32 @@ public class DBService {
         return arrivalListFrontend;
     }
 
-    public Boolean hasElevatorByEva(String eva) {
+    public List<Elevator> hasElevatorByEva(String eva) {
         Object object = defaultApi.stationsIdGet(eva);
         Map<String, Object> map = jacksonObjectMapper.convertValue(object, new TypeReference<Map<String, Object>>() {
         });
         String id = map.get("nr").toString();
         List<Facility> facilities;
         try {
-            facilities = faStaApi.findStationByStationNumber(Long.parseLong(id)).getFacilities();
+            //facilities = faStaApi.findStationByStationNumber(Long.parseLong(id)).getFacilities();
+            facilities = faStaApi.findFacilities(null, null, null, Long.parseLong(id), null );
         } catch (Exception e) {
-            return false;
+            throw e;
         }
         assert facilities != null;
 
+        List<Elevator> elevators = new ArrayList<>();
         for (Facility facility : facilities) {
-            if (facility.getType() == Facility.TypeEnum.ELEVATOR && facility.getState() == Facility.StateEnum.ACTIVE) {
-                return true;
+            if (facility.getType() == Facility.TypeEnum.ELEVATOR) {
+                if(facility.getStateExplanation().equals("available")){
+                    elevators.add(new Elevator(facility.getDescription(), "verfügbar"));
+                }else{
+                    elevators.add(new Elevator(facility.getDescription(), "nicht verfügbar"));
+                }
+
             }
         }
-        return false;
+        return elevators;
     }
 
     public String getCurrentDate() {
@@ -141,5 +149,4 @@ public class DBService {
                         .compareTo(LocalTime.parse(t2.getDepartureTime())))
                 .collect(Collectors.toList());
     }
-
 }

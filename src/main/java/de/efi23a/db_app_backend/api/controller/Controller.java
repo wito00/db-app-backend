@@ -4,6 +4,7 @@ package de.efi23a.db_app_backend.api.controller;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.efi23a.db_app_backend.model.Arrival;
 import de.efi23a.db_app_backend.model.Departure;
+import de.efi23a.db_app_backend.model.Elevator;
 import de.efi23a.db_app_backend.model.StationOverview;
 import de.efi23a.db_app_backend.service.DBService;
 import org.example.dbREst.api.DefaultApi;
@@ -49,9 +50,9 @@ public class Controller {
         departures = dbService.sortByDepartureTime(departures);
         List<Arrival> arrivals = dbService.getArrivalsByEva(eva);
         arrivals = dbService.sortByArrivalTime(arrivals);
-        Boolean hasElevator = dbService.hasElevatorByEva(eva);
+        List<Elevator> elevators= dbService.hasElevatorByEva(eva);
         String date = dbService.getCurrentDate();
-        return new StationOverview(stationName, hasElevator, date, departures, arrivals);
+        return new StationOverview(stationName, elevators, date, departures, arrivals);
     }
 
 
