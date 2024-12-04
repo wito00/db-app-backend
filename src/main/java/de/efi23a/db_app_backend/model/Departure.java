@@ -13,13 +13,15 @@ public class Departure {
     String platform;
     String destination;
     String typ;
+    boolean elevator;
 
-    public Departure(String name, String departureTime, String platform, String destination, String typ) {
+    public Departure(String name, String departureTime, String platform, String destination, String typ, boolean elevator) {
         this.name = name;
         this.departureTime = dateTimeToTime(departureTime);
         this.platform = platform;
         this.destination = destination;
         this.typ = typ;
+        this.elevator = elevator;
     }
 
     private String dateTimeToTime(String dateTime) {

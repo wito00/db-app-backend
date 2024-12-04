@@ -4,7 +4,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import de.efi23a.db_app_backend.model.Arrival;
 import de.efi23a.db_app_backend.model.Departure;
-import de.efi23a.db_app_backend.model.Elevator;
 import org.example.dbREst.api.DefaultApi;
 import org.example.dbRest.model.ArrivalWrapper;
 import org.example.dbRest.model.DepartureWrapper;
@@ -59,6 +58,7 @@ public class DBService {
         DepartureWrapper departureWrapper = defaultApi.stopsIdDeparturesGet(eva, OffsetDateTime.now(), null, 180, 100, null, null, null, null);
         List<org.example.dbRest.model.Departure> departureList = departureWrapper.getDepartures();
         List<Departure> departureListFrontend = new ArrayList<>();
+        List<String> platformsWithElevators = getListOfPlatformsWithElevatorByEva(eva);
         for (org.example.dbRest.model.Departure departure : departureList) {
             if(departure.getLine().getProductName().equals("Bus") || departure.getLine().getProductName().equals("STR") || departure.getLine().getProductName().equals("U")){
                 continue;
@@ -70,7 +70,12 @@ public class DBService {
             String platform = departure.getPlannedPlatform();
             String destination = departure.getDestination().getName();
             String typ = departure.getLine().getProductName();
-            departureListFrontend.add(new Departure(name, departureTime, platform, destination, typ));
+            boolean stepless = false;
+
+            if(platformsWithElevators.contains(platform)){
+                stepless = true;
+            }
+            departureListFrontend.add(new Departure(name, departureTime, platform, destination, typ, stepless));
         }
         return departureListFrontend;
     }
@@ -79,6 +84,7 @@ public class DBService {
         ArrivalWrapper arrivalWrapper = defaultApi.stopsIdArrivalsGet(eva, OffsetDateTime.now(), null, 180, 100, null, null, null, null);
         List<org.example.dbRest.model.Arrival> arrivalList = arrivalWrapper.getArrivals();
         List<Arrival> arrivalListFrontend = new ArrayList<>();
+        List<String> platformsWithElevators = getListOfPlatformsWithElevatorByEva(eva);
         for (org.example.dbRest.model.Arrival arrival : arrivalList) {
             if(arrival.getLine().getProductName().equals("Bus") || arrival.getLine().getProductName().equals("STR") || arrival.getLine().getProductName().equals("U")){
                 continue;
@@ -89,6 +95,10 @@ public class DBService {
             String departureTime = arrival.getPlannedWhen().toString();
             String platform = arrival.getPlannedPlatform();
             String origin= "";
+            Boolean stepless = false;
+            if(platformsWithElevators.contains(platform)){
+                stepless = true;
+            }
             assert arrival.getOrigin() != null;
             if(arrival.getOrigin().getName() != null){
             origin = arrival.getOrigin().getName();
@@ -96,12 +106,12 @@ public class DBService {
             }
 
             String typ = arrival.getLine().getProductName();
-            arrivalListFrontend.add(new Arrival(name, departureTime,platform, origin, typ));
+            arrivalListFrontend.add(new Arrival(name, departureTime,platform, origin, typ, stepless));
         }
         return arrivalListFrontend;
     }
 
-    public List<Elevator> hasElevatorByEva(String eva) {
+    public List<String> getListOfPlatformsWithElevatorByEva(String eva) {
         Object object = defaultApi.stationsIdGet(eva);
         Map<String, Object> map = jacksonObjectMapper.convertValue(object, new TypeReference<Map<String, Object>>() {
         });
@@ -115,18 +125,22 @@ public class DBService {
         }
         assert facilities != null;
 
-        List<Elevator> elevators = new ArrayList<>();
+        List<String> platformsWithElevator = new ArrayList<>();
         for (Facility facility : facilities) {
             if (facility.getType() == Facility.TypeEnum.ELEVATOR) {
-                if(facility.getStateExplanation().equals("available")){
-                    elevators.add(new Elevator(facility.getDescription(), "verfügbar"));
-                }else{
-                    elevators.add(new Elevator(facility.getDescription(), "nicht verfügbar"));
+                String[] parts  = facility.getDescription().split(" ");
+                for (int i = 0; i < parts.length; i++) {
+                    if (parts[i].equalsIgnoreCase("Gleis") && i + 1 < parts.length) {
+                        String[] platformParts = parts[i + 1].split("/");
+                        for (String platform : platformParts) {
+                            platformsWithElevator.add(platform);
+                        }
+                    }
                 }
 
             }
         }
-        return elevators;
+        return platformsWithElevator;
     }
 
     public String getCurrentDate() {

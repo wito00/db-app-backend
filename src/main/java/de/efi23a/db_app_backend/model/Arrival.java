@@ -13,14 +13,16 @@ public class Arrival {
     String platform;
     String origin;
     String typ;
+    boolean elevator;
 
-    public Arrival(String name, String arrivalDateTime,String platform, String origin, String typ) {
+    public Arrival(String name, String arrivalDateTime,String platform, String origin, String typ, boolean elevator) {
 
         this.name = name;
         this.arrivalTime = dateTimeToTime(arrivalDateTime);
         this.platform = platform;
         this.origin = origin;
         this.typ = typ;
+        this.elevator = elevator;
     }
 
     private String dateTimeToTime(String dateTime) {
