@@ -6,9 +6,7 @@ import de.efi23a.db_app_backend.model.Arrival;
 import de.efi23a.db_app_backend.model.Departure;
 import de.efi23a.db_app_backend.model.StationOverview;
 import de.efi23a.db_app_backend.service.DBService;
-import org.example.dbREst.api.DefaultApi;
 import org.example.faSta.api.FaStaApi;
-import org.example.timetables.api.TimetablesApi;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,9 +20,7 @@ public class Controller {
     private DBService dbService;
 
     public Controller(
-            DefaultApi defaultApi,
             ObjectMapper jacksonObjectMapper,
-            TimetablesApi timetablesApi,
             DBService dbService,
             FaStaApi faStaApi,
             @Value("${api.id}") String apiId,
@@ -33,8 +29,6 @@ public class Controller {
 
         this.dbService = dbService;
         //authentication for timetables and staDa API
-        timetablesApi.getApiClient().addDefaultHeader("DB-Client-Id", apiId);
-        timetablesApi.getApiClient().addDefaultHeader("DB-Api-Key", apiSecret);
         faStaApi.getApiClient().addDefaultHeader("DB-Client-Id", apiId);
         faStaApi.getApiClient().addDefaultHeader("DB-Api-Key", apiSecret);
     }

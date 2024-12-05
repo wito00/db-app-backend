@@ -10,7 +10,6 @@ import org.example.dbRest.model.DepartureWrapper;
 import org.example.dbRest.model.Station;
 import org.example.faSta.api.FaStaApi;
 import org.example.faSta.model.Facility;
-import org.example.timetables.api.TimetablesApi;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
@@ -25,20 +24,16 @@ import java.util.stream.Collectors;
 
 @Service
 public class DBService {
-    TimetablesApi timetablesApi;
     DefaultApi defaultApi;
     ObjectMapper jacksonObjectMapper;
     FaStaApi faStaApi;
     Arrival arrival;
 
     public DBService(
-            TimetablesApi timetablesApi,
             DefaultApi defaultApi,
             ObjectMapper jacksonObjectMapper,
             FaStaApi faStaApi
-
     ) {
-        this.timetablesApi = timetablesApi;
         this.defaultApi = defaultApi;
         this.jacksonObjectMapper = jacksonObjectMapper;
         this.faStaApi = faStaApi;
@@ -60,9 +55,10 @@ public class DBService {
         List<Departure> departureListFrontend = new ArrayList<>();
         List<String> platformsWithElevators = getListOfPlatformsWithElevatorByEva(eva);
         for (org.example.dbRest.model.Departure departure : departureList) {
-            if(departure.getLine().getProductName().equals("Bus") || departure.getLine().getProductName().equals("STR") || departure.getLine().getProductName().equals("U")){
+            if (departure.getLine().getProductName().equals("Bus") || departure.getLine().getProductName().equals("STR") || departure.getLine().getProductName().equals("U")) {
                 continue;
-            }if(departureListFrontend.size() >= 10){
+            }
+            if (departureListFrontend.size() >= 10) {
                 return departureListFrontend;
             }
             String name = departure.getLine().getName();
@@ -72,7 +68,7 @@ public class DBService {
             String typ = departure.getLine().getProductName();
             boolean stepless = false;
 
-            if(platformsWithElevators.contains(platform)){
+            if (platformsWithElevators.contains(platform)) {
                 stepless = true;
             }
             departureListFrontend.add(new Departure(name, departureTime, platform, destination, typ, stepless));
@@ -86,27 +82,28 @@ public class DBService {
         List<Arrival> arrivalListFrontend = new ArrayList<>();
         List<String> platformsWithElevators = getListOfPlatformsWithElevatorByEva(eva);
         for (org.example.dbRest.model.Arrival arrival : arrivalList) {
-            if(arrival.getLine().getProductName().equals("Bus") || arrival.getLine().getProductName().equals("STR") || arrival.getLine().getProductName().equals("U")){
+            if (arrival.getLine().getProductName().equals("Bus") || arrival.getLine().getProductName().equals("STR") || arrival.getLine().getProductName().equals("U")) {
                 continue;
-            }if(arrivalListFrontend.size() >= 10){
+            }
+            if (arrivalListFrontend.size() >= 10) {
                 return arrivalListFrontend;
             }
             String name = arrival.getLine().getName();
             String departureTime = arrival.getPlannedWhen().toString();
             String platform = arrival.getPlannedPlatform();
-            String origin= "";
+            String origin = "";
             Boolean stepless = false;
-            if(platformsWithElevators.contains(platform)){
+            if (platformsWithElevators.contains(platform)) {
                 stepless = true;
             }
             assert arrival.getOrigin() != null;
-            if(arrival.getOrigin().getName() != null){
-            origin = arrival.getOrigin().getName();
+            if (arrival.getOrigin().getName() != null) {
+                origin = arrival.getOrigin().getName();
 
             }
 
             String typ = arrival.getLine().getProductName();
-            arrivalListFrontend.add(new Arrival(name, departureTime,platform, origin, typ, stepless));
+            arrivalListFrontend.add(new Arrival(name, departureTime, platform, origin, typ, stepless));
         }
         return arrivalListFrontend;
     }
@@ -119,7 +116,7 @@ public class DBService {
         List<Facility> facilities;
         try {
             //facilities = faStaApi.findStationByStationNumber(Long.parseLong(id)).getFacilities();
-            facilities = faStaApi.findFacilities(null, null, null, Long.parseLong(id), null );
+            facilities = faStaApi.findFacilities(null, null, null, Long.parseLong(id), null);
         } catch (Exception e) {
             throw e;
         }
@@ -128,7 +125,7 @@ public class DBService {
         List<String> platformsWithElevator = new ArrayList<>();
         for (Facility facility : facilities) {
             if (facility.getType() == Facility.TypeEnum.ELEVATOR) {
-                String[] parts  = facility.getDescription().split(" ");
+                String[] parts = facility.getDescription().split(" ");
                 for (int i = 0; i < parts.length; i++) {
                     if (parts[i].equalsIgnoreCase("Gleis") && i + 1 < parts.length) {
                         String[] platformParts = parts[i + 1].split("/");
