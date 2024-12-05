@@ -12,6 +12,10 @@ import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeFormatterBuilder;
+import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -35,15 +39,16 @@ public class Controller {
 
     @GetMapping("/overview")
     @CrossOrigin("http://localhost:4200")
-    public StationOverview getStationOverviewByStationName(String pattern) {
+    public StationOverview getStationOverviewByStationName(String pattern, OffsetDateTime offsetDateTime) {
         List<String> evaAndName = dbService.getEvaAndNameByPattern(pattern);
         String eva = evaAndName.get(0);
         String stationName = evaAndName.get(1);
-        List<Departure> departures = dbService.getDeparturesByEva(eva);
+        List<Departure> departures = dbService.getDeparturesByEva(eva, offsetDateTime);
         departures = dbService.sortByDepartureTime(departures);
-        List<Arrival> arrivals = dbService.getArrivalsByEva(eva);
+        List<Arrival> arrivals = dbService.getArrivalsByEva(eva, offsetDateTime);
         arrivals = dbService.sortByArrivalTime(arrivals);
-        String date = dbService.getCurrentDate();
+        DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        String date = offsetDateTime.format(dtf);
         return new StationOverview(stationName, date, departures, arrivals);
     }
 

@@ -49,8 +49,8 @@ public class DBService {
         return evaAndName;
     }
 
-    public List<Departure> getDeparturesByEva(String eva) {
-        DepartureWrapper departureWrapper = defaultApi.stopsIdDeparturesGet(eva, OffsetDateTime.now(), null, 180, 100, null, null, null, null);
+    public List<Departure> getDeparturesByEva(String eva, OffsetDateTime offsetDateTime) {
+        DepartureWrapper departureWrapper = defaultApi.stopsIdDeparturesGet(eva, offsetDateTime, null, 180, 100, null, null, null, null);
         List<org.example.dbRest.model.Departure> departureList = departureWrapper.getDepartures();
         List<Departure> departureListFrontend = new ArrayList<>();
         List<String> platformsWithElevators = getListOfPlatformsWithElevatorByEva(eva);
@@ -76,8 +76,8 @@ public class DBService {
         return departureListFrontend;
     }
 
-    public List<Arrival> getArrivalsByEva(String eva) {
-        ArrivalWrapper arrivalWrapper = defaultApi.stopsIdArrivalsGet(eva, OffsetDateTime.now(), null, 180, 100, null, null, null, null);
+    public List<Arrival> getArrivalsByEva(String eva, OffsetDateTime offsetDateTime) {
+        ArrivalWrapper arrivalWrapper = defaultApi.stopsIdArrivalsGet(eva, offsetDateTime, null, 180, 100, null, null, null, null);
         List<org.example.dbRest.model.Arrival> arrivalList = arrivalWrapper.getArrivals();
         List<Arrival> arrivalListFrontend = new ArrayList<>();
         List<String> platformsWithElevators = getListOfPlatformsWithElevatorByEva(eva);
