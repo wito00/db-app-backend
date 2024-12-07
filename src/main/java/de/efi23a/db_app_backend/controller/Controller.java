@@ -1,4 +1,4 @@
-package de.efi23a.db_app_backend.api.controller;
+package de.efi23a.db_app_backend.controller;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
