@@ -18,10 +18,10 @@ import java.time.format.DateTimeFormatterBuilder;
 import java.util.Date;
 import java.util.List;
 
-@RestController
+@RestController // Kennzeichnet diese Klasse als REST-Controller, der HTTP-Anfragen entgegennimmt.
 public class Controller {
 
-    private DBService dbService;
+    private DBService dbService; // Service-Klasse für Datenbankinteraktionen.
 
     public Controller(
             ObjectMapper jacksonObjectMapper,
@@ -32,25 +32,32 @@ public class Controller {
     ) {
 
         this.dbService = dbService;
-        //authentication for timetables and staDa API
+        // Authentifizierung für die Fahrplan- und StaDa-API.
         faStaApi.getApiClient().addDefaultHeader("DB-Client-Id", apiId);
         faStaApi.getApiClient().addDefaultHeader("DB-Api-Key", apiSecret);
     }
 
-    @GetMapping("/overview")
-    @CrossOrigin("http://localhost:4200")
+    @GetMapping("/overview") // Definiert einen GET-Endpunkt unter "/overview".
+    @CrossOrigin("http://localhost:4200") // Erlaubt Cross-Origin-Anfragen von "http://localhost:4200".
     public StationOverview getStationOverviewByStationName(String pattern, OffsetDateTime offsetDateTime) {
+        // Ruft die EVA-Nummer und den Namen des Bahnhofs basierend auf dem Suchmuster ab.
         List<String> evaAndName = dbService.getEvaAndNameByPattern(pattern);
-        String eva = evaAndName.get(0);
-        String stationName = evaAndName.get(1);
+        String eva = evaAndName.get(0); // EVA-Nummer.
+        String stationName = evaAndName.get(1); // Bahnhofname.
+
+        // Ruft die Abfahrten für den Bahnhof und den angegebenen Zeitpunkt ab.
         List<Departure> departures = dbService.getDeparturesByEva(eva, offsetDateTime);
         departures = dbService.sortByDepartureTime(departures);
+
+        // Ruft die Ankünfte für den Bahnhof und den angegebenen Zeitpunkt ab.
         List<Arrival> arrivals = dbService.getArrivalsByEva(eva, offsetDateTime);
         arrivals = dbService.sortByArrivalTime(arrivals);
+
+        // Formatiert das Datum für die Ausgabe.
         DateTimeFormatter dtf = DateTimeFormatter.ofPattern("dd.MM.yyyy");
         String date = offsetDateTime.format(dtf);
+
+        // Gibt eine StationOverview-Instanz mit den abgerufenen Daten zurück.
         return new StationOverview(stationName, date, departures, arrivals);
     }
-
-
 }
